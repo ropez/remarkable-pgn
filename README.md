@@ -10,7 +10,7 @@ Chess game, including variations, commends, annotations etc.
 Installation:
 
 ```
-    npm install --save remarkable remarkable-pgn
+npm install --save remarkable remarkable-pgn
 ```
 
 Usage:

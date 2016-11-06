@@ -39,6 +39,10 @@ export const COMMENTSDISPLAY_INLINE   = 'i'
 export const COMMENTSDISPLAY_NEWLINE  = 'n'
 export const COMMENTSDISPLAY_HIDDEN   = 'h'
 
+export const FRAMEWIDTH_BOARD   = 'b'
+export const FRAMEWIDTH_PAGE    = 'p'
+export const FRAMEHEIGHT_BOARD  = 'b'
+
 const defaults = {
   autoplayMode: AUTOPLAY_MODE_GAME,
   delay: 3000,
@@ -73,8 +77,8 @@ const defaults = {
   commentsDisplay: COMMENTSDISPLAY_INLINE,
   framePadding: 25,
   horizontal: true,
-  frameHeight: 'b',  // TODO implement
-  frameWidth: 'p',  // TODO implement
+  frameHeight: null,
+  frameWidth: null,
 }
 
 var sexEncodingCharSet = "$0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
@@ -120,11 +124,31 @@ export const generate = (pgn, options = {}) => {
   }
   boardHeight = Math.floor(boardHeight);
 
-  let frameWidth = boardWidth + 2 * cfg.framePadding;
-  let frameHeight = boardHeight + 2 * cfg.framePadding;
+  let min_frameWidth = boardWidth + 2 * cfg.framePadding;
+  let min_frameHeight = boardHeight + 2 * cfg.framePadding;
 
-  // XXX
-  frameWidth = '100%';
+  let suggested_frameWidth, suggested_frameHeight;
+  if (cfg.horizontal) {
+    suggested_frameHeight = FRAMEWIDTH_BOARD
+    suggested_frameWidth = FRAMEWIDTH_PAGE
+  } else {
+    suggested_frameWidth = boardWidth;
+    suggested_frameHeight = boardHeight;
+    if (cfg.headerDisplay != HEADERDISPLAY_HIDDEN) {
+      suggested_frameHeight += Math.max(100, Math.round(0.2 * boardWidth));
+    }
+    if (cfg.movesDisplay != MOVESDISPLAY_HIDDEN) {
+      suggested_frameHeight += Math.max(300, Math.round(0.8 * boardWidth));
+    }
+    if ((cfg.headerDisplay != HEADERDISPLAY_HIDDEN) || (cfg.movesDisplay != MOVESDISPLAY_HIDDEN)) {
+      suggested_frameWidth = Math.max(400, Math.round(1.5 * boardWidth));
+    }
+    suggested_frameWidth += 2 * cfg.framePadding;
+    suggested_frameHeight += 2 * cfg.framePadding;
+  }
+
+  let frameHeight = cfg.frameHeight || suggested_frameHeight
+  let frameWidth = cfg.frameWidth || suggested_frameWidth
 
   let query = qs.stringify({
     am: cfg.autoplayMode,
@@ -160,12 +184,36 @@ export const generate = (pgn, options = {}) => {
     bcs: cfg.backgroundColor ? hex2sex(cfg.backgroundColor) : 't',
     fp: cfg.framePadding,
     hl: cfg.horizontal ? 't' : 'f',
+    fh: frameHeight,
+    fw: frameWidth,
     pe: EncodePGN(pgn),
   })
+
+  let outerFrameWidth, outerFrameHeight;
+  switch (frameWidth) {
+    case FRAMEWIDTH_BOARD:
+      outerFrameWidth = min_frameWidth;
+      break;
+    case FRAMEWIDTH_PAGE:
+      outerFrameWidth = "100%";
+      break;
+    default:
+      outerFrameWidth = frameWidth;
+      break;
+  }
+
+  switch (frameHeight) {
+    case FRAMEHEIGHT_BOARD:
+      outerFrameHeight = min_frameHeight;
+      break;
+    default:
+      outerFrameHeight = frameHeight;
+      break;
+  }
 
   let url = `http://pgn4web-board.casaschi.net/?${query}`
 
   return {
-    frameHeight, frameWidth, url
+    outerFrameWidth, outerFrameHeight, url
   }
 }

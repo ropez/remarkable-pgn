@@ -19,7 +19,6 @@ Usage:
 import Remarkable from 'remarkable';
 import RemarkablePGN from 'remarkable-pgn';
 
-
 const remarkable = new Remarkable();
 
 remarkable.use(RemarkablePGN, { /* options */ });

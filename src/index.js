@@ -30,9 +30,9 @@ const pgnRule = (state, startLine, endLine, checkMode) => {
 }
 
 const render_pgn4web = (tokens, idx, options) => {
-  let { url, frameHeight, frameWidth } = generate(tokens[idx].content, options.pgn)
-  return `<iframe
-      height="${frameHeight}" width="${frameWidth}" src="${url}"
+  let { url, outerFrameWidth, outerFrameHeight } = generate(tokens[idx].content, options.pgn)
+  return `<iframe src="${url}"
+      width="${outerFrameWidth}" height="${outerFrameHeight}"
       scrolling='no' frameBorder='0'
       marginHeight='0' marginWidth='0'>
     Your web browser do not support iframes as required to display the chessboard

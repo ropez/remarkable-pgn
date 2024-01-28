@@ -1,3 +1,6 @@
+# ARCHIVED
+
+
 # Remarkable plugin for parsing and displaying Chess games
 
 This plugin is basically a Javascript implementation of the Chessboard
